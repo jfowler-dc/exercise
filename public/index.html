@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .user-info {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+
+        .auth-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 30px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 15px;
+            background: #f0f0f0;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .auth-tab:first-child {
+            border-radius: 10px 0 0 10px;
+        }
+
+        .auth-tab:last-child {
+            border-radius: 0 10px 10px 0;
+        }
+
+        .auth-tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            margin-top: 10px;
+        }
+
+        .workout-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .workout-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .workout-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .workout-date {
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .rest-day {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(45deg, #00b09b, #96c93d);
+            color: white;
+            border-radius: 15px;
+        }
+
+        .rest-day h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .rest-day p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .exercise {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .exercise:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .exercise-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .exercise-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .exercise-target {
+            font-size: 1rem;
+            color: #666;
+            background: #e9ecef;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .sets-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .set-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .set-item.completed {
+            border-color: #28a745;
+            background: #f8fff9;
+        }
+
+        .set-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .set-number {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .set-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .set-inputs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .set-input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            text-align: center;
+            width:50%;
+        }
+
+        .set-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .previous-data {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #1976d2;
+        }
+
+        .weight-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .weight-input-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .weight-input-container input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .weight-input-container select {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: white;
+        }
+
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .sets-container {
+                grid-template-columns: 1fr;
+            }
+
+            .weight-input-container {
+                flex-direction: column;
+            }
+
+            .workout-section, .weight-section, .auth-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div style="display: none;" class="user-info" id="userInfo">
+                <span id="currentDate"></span>
+            </div>
+            <div style="display: block; justify-content: space-between; align-items: center;">
+                <div style="color:#fff; text-align:left;">
+                    <h2 style="margin-bottom:10px;">Welcome back, <span id="userName"></span>!</h2>
+                    <p id="todayDate"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Authentication Section -->
+        <div class="auth-section" id="authSection">
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchAuthTab('login')">Login</button>
+                <button class="auth-tab" onclick="switchAuthTab('register')">Register</button>
+            </div>
+
+            <div class="auth-form active" id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button class="btn" onclick="login()">Login</button>
+            </div>
+
+            <div class="auth-form" id="registerForm">
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerDisplayName">Display Name</label>
+                    <input type="text" id="registerDisplayName" required>
+                </div>
+                <button class="btn" onclick="register()">Register</button>
+            </div>
+
+            <div id="authError" class="error hidden"></div>
+            
+        </div>
+
+        <!-- Main App Content -->
+        <div id="appContent" class="hidden">            
+
+
+            <!-- Workout Section -->
+            <div class="workout-section">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+                <div style="text-align: left; margin-top: 10px; margin-bottom:40px;">
+                    <span id="progressText">0 / 0 sets completed</span>
+                </div>
+
+                <div class="workout-header">
+                    <div class="workout-title" id="workoutTitle">Loading...</div>
+                    <div class="workout-date" id="workoutDate"></div>
+                </div>
+                
+                <div id="workoutContent">
+                    <div class="loading">Loading today's workout...</div>
+                </div>
+                
+            </div>
+
+            <!-- Body Weight Tracking -->
+            <div class="weight-section">
+                <h2 style="margin-bottom:15px; display:inline-block;">📊 Body Weight Tracking</h2>
+                <div class="weight-input-container">
+                    <input type="number" id="weightInput" placeholder="Enter weight" step="0.1">
+                    <select id="weightUnit">
+                        <option value="lbs">lbs</option>
+                        <option value="kg">kg</option>
+                    </select>
+                    <button class="btn" onclick="logWeight()">Log Weight</button>
+                </div>
+            </div>
+
+            <div class="auth-section">
+                <button class="btn btn-secondary" onclick="logout()">Logout</button>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-auth-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-firestore-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+    <script>
+        // Firebase Configuration (Replace with your config)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDax7bOMhDsmwCM_RzuQBqI-NZnNYQO_CE",
+            authDomain: "exercise-b567d.firebaseapp.com",
+            projectId: "exercise-b567d",
+            storageBucket: "exercise-b567d.firebasestorage.app",
+            messagingSenderId: "1096171841284",
+            appId: "1:1096171841284:web:bf1b56080cf1fe35795251",
+            measurementId: "G-WVZ5LSBFXP"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Global variables
+        let currentUser = null;
+        let currentWorkoutSession = null;
+        let workoutTemplate = null;
+        let weightChart = null;
+
+        // Workout templates
+        const workoutTemplates = {
+            1: {
+                dayNumber: 1,
+                workoutName: "Strength Push (Heavy Compounds)",
+                exercises: [
+                    { name: "Bench Press", sets: 4, reps: "5", restTime: "3-5 min" },
+                    { name: "Overhead Press", sets: 4, reps: "5", restTime: "3-5 min" },
+                    { name: "Weighted Dips", sets: 3, reps: "6-8", restTime: "2-3 min" },
+                    { name: "Triceps Skull Crushers", sets: 3, reps: "8-12", restTime: "90 sec" },
+                    { name: "Lateral Raises", sets: 3, reps: "12-15", restTime: "60 sec" }
+                ]
+            },
+            2: {
+                dayNumber: 2,
+                workoutName: "Strength Pull (Heavy Compounds)",
+                exercises: [
+                    { name: "Deadlifts", sets: 4, reps: "5", restTime: "3-5 min" },
+                    { name: "Weighted Pull-Ups", sets: 4, reps: "6-8", restTime: "3-5 min" },
+                    { name: "Bent Over Rows", sets: 3, reps: "8-10", restTime: "2-3 min" },
+                    { name: "Face Pulls", sets: 3, reps: "12-15", restTime: "90 sec" },
+                    { name: "Biceps Curls", sets: 3, reps: "12-15", restTime: "60 sec" }
+                ]
+            },
+            3: {
+                dayNumber: 3,
+                workoutName: "Legs & Core (Explosive Power + Hypertrophy)",
+                exercises: [
+                    { name: "Squats", sets: 4, reps: "5", restTime: "3-5 min" },
+                    { name: "Romanian Deadlifts", sets: 3, reps: "8-10", restTime: "2-3 min" },
+                    { name: "Leg Press", sets: 3, reps: "12", restTime: "2 min" },
+                    { name: "Hanging Leg Raises", sets: 3, reps: "12-15", restTime: "90 sec" },
+                    { name: "Plank", sets: 3, reps: "45 seconds", restTime: "60 sec" }
+                ]
+            },
+            4: {
+                dayNumber: 4,
+                workoutName: "Hypertrophy Push (Higher Reps & Volume)",
+                exercises: [
+                    { name: "Incline Dumbbell Press", sets: 4, reps: "8-10", restTime: "2-3 min" },
+                    { name: "Machine Shoulder Press", sets: 4, reps: "10-12", restTime: "2 min" },
+                    { name: "Chest Flys", sets: 3, reps: "12-15", restTime: "90 sec" },
+                    { name: "Rope Triceps Extensions", sets: 3, reps: "12-15", restTime: "90 sec" },
+                    { name: "Rear Delt Flys", sets: 3, reps: "12-15", restTime: "60 sec" }
+                ]
+            },
+            5: {
+                dayNumber: 5,
+                workoutName: "Hypertrophy Pull (Back Focus + Arms)",
+                exercises: [
+                    { name: "Lat Pulldown", sets: 4, reps: "10-12", restTime: "2-3 min" },
+                    { name: "Seated Cable Row", sets: 3, reps: "10-12", restTime: "2 min" },
+                    { name: "Hammer Curls", sets: 3, reps: "12-15", restTime: "90 sec" },
+                    { name: "Face Pulls", sets: 3, reps: "12-15", restTime: "90 sec" },
+                    { name: "Reverse Biceps Curls", sets: 3, reps: "12-15", restTime: "60 sec" }
+                ]
+            },
+            6: {
+                dayNumber: 6,
+                workoutName: "Legs & Core (Volume + Isolation)",
+                exercises: [
+                    { name: "Bulgarian Split Squats", sets: 3, reps: "10-12", restTime: "2 min" },
+                    { name: "Seated Calf Raises", sets: 4, reps: "12-15", restTime: "90 sec" },
+                    { name: "Hamstring Curls", sets: 3, reps: "12-15", restTime: "90 sec" },
+                    { name: "Decline Sit-Ups", sets: 3, reps: "12-15", restTime: "60 sec" },
+                    { name: "Hanging Knee Raises", sets: 3, reps: "12-15", restTime: "60 sec" }
+                ]
+            },
+            7: {
+                dayNumber: 7,
+                workoutName: "Rest / Active Recovery",
+                exercises: []
+            }
+        };
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCurrentDate();
+            
+            // Check if user is already logged in
+            auth.onAuthStateChanged(function(user) {
+                if (user) {
+                    currentUser = user;
+                    showApp();
+                } else {
+                    showAuth();
+                }
+            });
+        });
+
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+            document.getElementById('todayDate').textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
+            
+            document.querySelector(`[onclick="switchAuthTab('${tab}')"]`).classList.add('active');
+            document.getElementById(tab + 'Form').classList.add('active');
+        }
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                hideError();
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        async function register() {
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const displayName = document.getElementById('registerDisplayName').value;
+            
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                await userCredential.user.updateProfile({ displayName });
+                
+                // Create user document
+                await db.collection('users').doc(userCredential.user.uid).set({
+                    userId: userCredential.user.uid,
+                    email: email,
+                    displayName: displayName,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                hideError();
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        async function logout() {
+            await auth.signOut();
+            currentUser = null;
+            showAuth();
+        }
+
+        function showAuth() {
+            document.getElementById('authSection').classList.remove('hidden');
+            document.getElementById('appContent').classList.add('hidden');
+        }
+
+        function showApp() {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('appContent').classList.remove('hidden');
+            document.getElementById('userName').textContent = currentUser.displayName || currentUser.email;
+            
+            initializeApp();
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('authError');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+        }
+
+        function hideError() {
+            document.getElementById('authError').classList.add('hidden');
+        }
+
+        async function initializeApp() {
+            await loadTodaysWorkout();
+            await loadWeightChart();
+        }
+
+        async function loadTodaysWorkout() {
+            const today = new Date();
+            const dayOfWeek = today.getDay() || 7; // Convert Sunday (0) to 7
+            const dateString = today.toISOString().split('T')[0];
+            
+            workoutTemplate = workoutTemplates[dayOfWeek];
+            
+            document.getElementById('workoutTitle').textContent = workoutTemplate.workoutName;
+            document.getElementById('workoutDate').textContent = `Day ${dayOfWeek}`;
+            
+            if (dayOfWeek === 7) {
+                // Rest day
+                document.getElementById('workoutContent').innerHTML = `
+                    <div class="rest-day">
+                        <h2>🛌 Rest Day</h2>
+                        <p>Take a well-deserved break! Your muscles need time to recover and grow.</p>
+                        <p>Consider light stretching, yoga, or a gentle walk.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Load or create workout session
+            const sessionId = `${currentUser.uid}_${dateString}`;
+            try {
+                const sessionDoc = await db.collection('workoutSessions').doc(sessionId).get();
+                
+                if (sessionDoc.exists) {
+                    currentWorkoutSession = sessionDoc.data();
+                } else {
+                    // Create new session
+                    currentWorkoutSession = {
+                        userId: currentUser.uid,
+                        date: dateString,
+                        dayOfWeek: dayOfWeek,
+                        workoutType: workoutTemplate.workoutName,
+                        exercises: workoutTemplate.exercises.map(exercise => ({
+                            exerciseName: exercise.name,
+                            targetSets: exercise.sets,
+                            targetReps: exercise.reps,
+                            sets: Array.from({length: exercise.sets}, (_, i) => ({
+                                setNumber: i + 1,
+                                weight: null,
+                                reps: null,
+                                completed: false,
+                                completedAt: null
+                            }))
+                        })),
+                        totalSetsCompleted: 0,
+                        totalSets: workoutTemplate.exercises.reduce((sum, ex) => sum + ex.sets, 0),
+                        workoutCompleted: false,
+                        completedAt: null
+                    };
+                    
+                    await db.collection('workoutSessions').doc(sessionId).set(currentWorkoutSession);
+                }
+                
+                // Load previous week's data for comparison
+                const prevWeekDate = new Date(today);
+                prevWeekDate.setDate(prevWeekDate.getDate() - 7);
+                const prevWeekDateString = prevWeekDate.toISOString().split('T')[0];
+                const prevSessionId = `${currentUser.uid}_${prevWeekDateString}`;
+                
+                let previousWeekData = null;
+                try {
+                    const prevSessionDoc = await db.collection('workoutSessions').doc(prevSessionId).get();
+                    if (prevSessionDoc.exists) {
+                        previousWeekData = prevSessionDoc.data();
+                    }
+                } catch (error) {
+                    console.log('No previous week data found');
+                }
+                
+                renderWorkout(previousWeekData);
+                updateProgress();
+                
+            } catch (error) {
+                console.error('Error loading workout:', error);
+            }
+        }
+
+        function renderWorkout(previousWeekData) {
+            const workoutContent = document.getElementById('workoutContent');
+            workoutContent.innerHTML = '';
+            
+            currentWorkoutSession.exercises.forEach((exercise, exerciseIndex) => {
+                const exerciseDiv = document.createElement('div');
+                exerciseDiv.className = 'exercise';
+                
+                const prevExercise = previousWeekData?.exercises?.[exerciseIndex];
+                
+                exerciseDiv.innerHTML = `
+                    <div class="exercise-header">
+                        <div class="exercise-name">${exercise.exerciseName}</div>
+                        <div class="exercise-target">${exercise.targetSets} sets × ${exercise.targetReps} reps</div>
+                    </div>
+                    <div class="sets-container">
+                        ${exercise.sets.map((set, setIndex) => {
+                            const prevSet = prevExercise?.sets?.[setIndex];
+                            const prevDataHtml = prevSet ? `
+                                <div class="previous-data">
+                                    Last week: ${prevSet.weight || 0} lbs × ${prevSet.reps || 0} reps
+                                </div>
+                            ` : '';
+                            
+                            return `
+                                <div class="set-item ${set.completed ? 'completed' : ''}">
+                                    <div class="set-header">
+                                        <div class="set-number">Set ${set.setNumber}</div>
+                                        <input type="checkbox" class="set-checkbox" 
+                                               ${set.completed ? 'checked' : ''} 
+                                               onchange="toggleSetCompletion(${exerciseIndex}, ${setIndex})">
+                                    </div>
+                                    <div class="set-inputs">
+                                        <input type="number" class="set-input" placeholder="Weight" 
+                                               value="${set.weight || ''}" 
+                                               onchange="updateSetData(${exerciseIndex}, ${setIndex}, 'weight', this.value)">
+                                        <input type="number" class="set-input" placeholder="Reps" 
+                                               value="${set.reps || ''}" 
+                                               onchange="updateSetData(${exerciseIndex}, ${setIndex}, 'reps', this.value)">
+                                    </div>
+                                    ${prevDataHtml}
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+                
+                workoutContent.appendChild(exerciseDiv);
+            });
+        }
+
+        async function updateSetData(exerciseIndex, setIndex, field, value) {
+            if (!currentWorkoutSession) return;
+            
+            currentWorkoutSession.exercises[exerciseIndex].sets[setIndex][field] = value ? parseFloat(value) : null;
+            
+            // Save to Firebase
+            const today = new Date();
+            const dateString = today.toISOString().split('T')[0];
+            const sessionId = `${currentUser.uid}_${dateString}`;
+            
+            try {
+                await db.collection('workoutSessions').doc(sessionId).update({
+                    [`exercises.${exerciseIndex}.sets.${setIndex}.${field}`]: value ? parseFloat(value) : null
+                });
+            } catch (error) {
+                console.error('Error updating set data:', error);
+            }
+        }
+
+        async function toggleSetCompletion(exerciseIndex, setIndex) {
+            if (!currentWorkoutSession) return;
+            
+            const set = currentWorkoutSession.exercises[exerciseIndex].sets[setIndex];
+            set.completed = !set.completed;
+            set.completedAt = set.completed ? new Date() : null;
+            
+            // Update total completed sets
+            currentWorkoutSession.totalSetsCompleted = currentWorkoutSession.exercises
+                .reduce((total, exercise) => total + exercise.sets.filter(s => s.completed).length, 0);
+            
+            // Save to Firebase
+            const today = new Date();
+            const dateString = today.toISOString().split('T')[0];
+            const sessionId = `${currentUser.uid}_${dateString}`;
+            
+            try {
+                await db.collection('workoutSessions').doc(sessionId).update({
+                    [`exercises.${exerciseIndex}.sets.${setIndex}.completed`]: set.completed,
+                    [`exercises.${exerciseIndex}.sets.${setIndex}.completedAt`]: set.completed ? firebase.firestore.FieldValue.serverTimestamp() : null,
+                    totalSetsCompleted: currentWorkoutSession.totalSetsCompleted
+                });
+                
+                updateProgress();
+            } catch (error) {
+                console.error('Error updating set completion:', error);
+            }
+        }
+
+        function updateProgress() {
+            if (!currentWorkoutSession) return;
+            
+            const completed = currentWorkoutSession.totalSetsCompleted;
+            const total = currentWorkoutSession.totalSets;
+            const percentage = total > 0 ? (completed / total) * 100 : 0;
+            
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = `${completed} / ${total} sets completed`;
+        }
+
+        async function logWeight() {
+            const weight = document.getElementById('weightInput').value;
+            const unit = document.getElementById('weightUnit').value;
+            
+            if (!weight || !currentUser) return;
+            
+            const today = new Date();
+            const dateString = today.toISOString().split('T')[0];
+            const logId = `${currentUser.uid}_${dateString}`;
+            
+            const weightLog = {
+                userId: currentUser.uid,
+                date: dateString,
+                weight: parseFloat(weight),
+                unit: unit,
+                loggedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            try {
+                await db.collection('bodyWeightLogs').doc(logId).set(weightLog);
+                document.getElementById('weightInput').value = '';
+                showSuccess('Weight logged successfully!');
+                await loadWeightChart();
+            } catch (error) {
+                console.error('Error logging weight:', error);
+                showError('Error logging weight. Please try again.');
+            }
+        }
+
+        async function loadWeightChart() {
+            if (!currentUser) return;
+            
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - 30);
+            
+            try {
+                const snapshot = await db.collection('bodyWeightLogs')
+                    .where('userId', '==', currentUser.uid)
+                    .where('date', '>=', startDate.toISOString().split('T')[0])
+                    .orderBy('date', 'asc')
+                    .get();
+                
+                const weightData = [];
+                const labels = [];
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    weightData.push(data.weight);
+                    labels.push(new Date(data.date).toLocaleDateString());
+                });
+                
+                if (weightChart) {
+                    weightChart.destroy();
+                }
+                
+                const ctx = document.getElementById('weightChart').getContext('2d');
+                weightChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Body Weight',
+                            data: weightData,
+                            borderColor: 'rgb(102, 126, 234)',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            tension: 0.1,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Body Weight Over Time (Last 30 Days)'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                title: {
+                                    display: true,
+                                    text: 'Weight (lbs/kg)'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Date'
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                if (weightData.length === 0) {
+                    // Show placeholder when no data
+                    weightChart.data.labels = ['No data'];
+                    weightChart.data.datasets[0].data = [0];
+                    weightChart.update();
+                }
+                
+            } catch (error) {
+                console.error('Error loading weight chart:', error);
+            }
+        }
+
+        function showSuccess(message) {
+            // Create and show success message
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success';
+            successDiv.textContent = message;
+            
+            const weightSection = document.querySelector('.weight-section');
+            weightSection.insertBefore(successDiv, weightSection.firstChild);
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 3000);
+        }
+
+        // Demo mode functions (since we can't use real Firebase in this environment)
+        function enableDemoMode() {
+            console.log('Demo mode enabled - Firebase calls will be simulated');
+            
+            // Override Firebase functions for demo
+            const originalFirestore = firebase.firestore;
+            firebase.firestore = function() {
+                return {
+                    collection: function(name) {
+                        return {
+                            doc: function(id) {
+                                return {
+                                    get: function() {
+                                        return Promise.resolve({
+                                            exists: false,
+                                            data: function() { return null; }
+                                        });
+                                    },
+                                    set: function(data) {
+                                        console.log('Demo: Setting document', id, data);
+                                        return Promise.resolve();
+                                    },
+                                    update: function(data) {
+                                        console.log('Demo: Updating document', id, data);
+                                        return Promise.resolve();
+                                    }
+                                };
+                            },
+                            where: function() { return this; },
+                            orderBy: function() { return this; },
+                            get: function() {
+                                return Promise.resolve({
+                                    forEach: function(callback) {
+                                        // Return some demo data
+                                        if (name === 'bodyWeightLogs') {
+                                            const demoData = [
+                                                { date: '2024-01-01', weight: 180, unit: 'lbs' },
+                                                { date: '2024-01-02', weight: 179.5, unit: 'lbs' },
+                                                { date: '2024-01-03', weight: 180.2, unit: 'lbs' }
+                                            ];
+                                            demoData.forEach(data => callback({ data: () => data }));
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    }
+                };
+            };
+            
+            // Override auth for demo
+            const originalAuth = firebase.auth;
+            firebase.auth = function() {
+                return {
+                    onAuthStateChanged: function(callback) {
+                        setTimeout(() => {
+                            callback({
+                                uid: 'demo-user',
+                                email: 'demo@example.com',
+                                displayName: 'Demo User'
+                            });
+                        }, 1000);
+                    },
+                    signInWithEmailAndPassword: function(email, password) {
+                        return Promise.resolve({
+                            user: {
+                                uid: 'demo-user',
+                                email: email,
+                                displayName: 'Demo User'
+                            }
+                        });
+                    },
+                    createUserWithEmailAndPassword: function(email, password) {
+                        return Promise.resolve({
+                            user: {
+                                uid: 'demo-user',
+                                email: email,
+                                displayName: 'Demo User',
+                                updateProfile: function(profile) {
+                                    return Promise.resolve();
+                                }
+                            }
+                        });
+                    },
+                    signOut: function() {
+                        return Promise.resolve();
+                    }
+                };
+            };
+        }
+
+        // Enable demo mode since we can't use real Firebase
+        enableDemoMode();
+    </script>
+</body>
+</html>
