@@ -495,6 +495,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-auth-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-firestore-compat.min.js"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 
     <script>
@@ -656,8 +657,6 @@
                     userId: userCredential.user.uid,
                     email: email,
                     displayName: displayName,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    lastLogin: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 
                 hideError();
@@ -906,7 +905,7 @@
                 date: dateString,
                 weight: parseFloat(weight),
                 unit: unit,
-                loggedAt: firebase.firestore.FieldValue.serverTimestamp()
+                loggedAt: Date.now()
             };
             
             try {
